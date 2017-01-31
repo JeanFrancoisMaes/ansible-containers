@@ -1,0 +1,24 @@
+# Install Ansible Roles
+# ---------------------
+# When the build process starts `ansible-galaxy install -r requirements.yml` is executed
+# using this file. Follow the instructions at http://docs.ansible.com/ansible/galaxy.html
+# to include any roles you want intalled prior to running main.yml.
+
+
+#lets see of this works...
+
+
+
+
+#downloading mariadb/mysql role
+
+#- src: bertvv.mariadb
+
+
+#downloading httpd role
+ 
+#- src: bertvv.httpd
+
+#downloading wordpress role
+
+#- src: bertvv.wordpress

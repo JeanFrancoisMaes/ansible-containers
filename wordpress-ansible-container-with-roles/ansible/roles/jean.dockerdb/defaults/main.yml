@@ -1,0 +1,5 @@
+# roles/mariadb/defaults/main.yml
+---
+wp_mysql_db: wordpress
+wp_mysql_user: wordpress
+wp_mysql_password: password

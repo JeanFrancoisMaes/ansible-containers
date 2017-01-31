@@ -1,0 +1,9 @@
+
+- hosts: db
+  roles:
+    - jean.dockerdb
+
+
+- hosts: wordpress
+  roles:
+    - jean.dockerwp

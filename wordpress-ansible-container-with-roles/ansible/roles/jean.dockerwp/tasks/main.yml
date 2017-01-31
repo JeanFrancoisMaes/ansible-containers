@@ -1,0 +1,57 @@
+- include_vars: "{{item}}"
+  with_first_found:
+    - "{{ansible_distribution}}.yml"
+    - "{{ansible_os_family}}.yml"
+
+- name: Update the system with required packages
+  shell: yum -y update && \
+         yum clean all && \
+         yum -y install epel-release && \
+         yum clean all
+
+- name: Install packages
+  yum:
+    name: "{{ item }}"
+    state: latest 
+  with_items: "{{wordpress_deps}}"
+        
+
+- name: Download wordpress
+  shell: cd /tmp; curl -LO http://wordpress.org/latest.tar.gz
+      
+- name: untar
+  shell: tar -zxvf /tmp/latest.tar.gz -C /var/www/html
+
+- name: change permission
+  shell: chmod +x /tmp/* 
+
+- name: Change permission of files
+  shell: chown -R apache:apache /var/www/*
+      
+      
+- name: Copy the sample file
+  command: mv /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+     
+- name: Change DocumentRoot
+  lineinfile:
+    dest: /etc/httpd/conf/httpd.conf 
+    regexp: "(.)+DocumentRoot /var/www/html"
+    line: "DocumentRoot /var/www/html/wordpress"
+
+- name: Update the database path
+  copy:
+    content: sed /var/www/html/wordpress/wp-config.php -i -e "s/^\(define('DB_HOST', '\).*\(');.*\)/\1${DB_PORT#tcp://}\2/"   
+    dest: /tmp/a.sh
+
+- name: change perm
+  shell: chmod +x /tmp/a.sh
+
+- name: Update WordPress config file        
+  lineinfile:
+    dest: /var/www/html/wordpress/wp-config.php
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{wp_mysql_db}}');"}
+    - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{wp_mysql_user}}');"}
+    - {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{wp_mysql_password}}');"} 

@@ -1,0 +1,12 @@
+# roles/mariadb/vars/RedHat.yml
+---
+
+mariadb_packages:
+  - epel-release
+  - bind-utils
+  - psmisc
+  - hostname
+  - mariadb-server
+  - MySQL-python
+
+

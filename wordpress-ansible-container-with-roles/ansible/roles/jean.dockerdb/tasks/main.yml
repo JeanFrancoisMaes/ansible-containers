@@ -1,0 +1,35 @@
+- include_vars: "{{item}}"
+  with_first_found:
+    - "{{ansible_distribution}}.yml"
+    - "{{ansible_os_family}}.yml"
+
+- name: ensure packages are installed for mariadb 
+  package:
+    name: "{{item}}"
+    state: latest
+  with_items: "{{mariadb_packages}}"
+
+- name: Update the repository
+  shell: yum -y erase vim-minimal && \
+             yum -y update && \
+             yum clean all    
+
+- name: mysql_install_db
+  shell: mysql_install_db --user=mysql --basedir=/usr/ --ldata=/var/lib/mysql/ 
+
+- name: run mysqld_safe
+  shell: mysqld_safe > /dev/null 2>&1 &
+         sleep 5
+           
+- name: Create mysql database
+  mysql_db:
+      name: "{{ wp_mysql_db }}"
+      state: present
+        
+- name: Create mysql user
+  mysql_user: 
+     name: "{{ wp_mysql_user }}"
+     password: "{{ wp_mysql_password }}"
+     state: present
+     priv: "*.*:ALL,GRANT"
+     host: "%" 

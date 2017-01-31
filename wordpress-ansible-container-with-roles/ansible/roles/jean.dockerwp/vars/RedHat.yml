@@ -1,0 +1,12 @@
+# roles/mariadb/vars/RedHat.yml
+---
+
+wordpress_deps:
+  - httpd
+  - php
+  - php-mysql
+  - php-gd
+  - psmisc
+  - tar
+
+
